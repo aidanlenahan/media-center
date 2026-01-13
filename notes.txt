@@ -39,7 +39,7 @@ INSTALLATION QUICK START
       - Both directories return 403 errors if accessed directly
    
    c) File Access Control
-      - Only specific PHP files are publicly accessible:
+      - Only specific PHP files are publicly accessible  (using .htaccess):
         * form.php (student pass request form)
         * login.php (admin login)
         * dashboard.php (admin panel)
@@ -49,6 +49,7 @@ INSTALLATION QUICK START
         * 403.php (error page)
       - All other PHP files (scripts, cron jobs) are blocked from web access
       - .sql, .md, .txt files are blocked from direct access
+      - NOTE: in /etc/apache2/apache2.conf, 'AllowOverride All' must be in place for corresponding virtual host, giving .htaccess discretion
    
    d) Production Deployment
       - Set up HTTPS/SSL certificate (required for production)
