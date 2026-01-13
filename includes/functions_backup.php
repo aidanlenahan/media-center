@@ -18,18 +18,33 @@ function generatePassCode() {
 
 // Check if form is currently open
 function isFormOpen($pdo) {
-    $stmt = $pdo->query("SELECT form_auto_open, form_open_time, form_close_time FROM settings LIMIT 1");
+    $stmt = $pdo->query("SELECT form_auto_open, form_open_time, form_close_time, form_status_override, form_status_manual, disable_weekends FROM settings LIMIT 1");
     $settings = $stmt->fetch();
     
+    // Check for manual override first
+    if ($settings['form_status_override']) {
+        return $settings['form_status_manual'] === 'open';
+    }
+    
+    // Check if weekends are disabled
+    if ($settings['disable_weekends']) {
+        $dayOfWeek = date('N'); // 1 (Monday) through 7 (Sunday)
+        if ($dayOfWeek == 6 || $dayOfWeek == 7) { // Saturday or Sunday
+            return false;
+        }
+    }
+    
+    // Check if auto-open is disabled
     if (!$settings['form_auto_open']) {
         return false;
     }
     
+    // Check time-based opening
     $currentTime = date('H:i:s');
     $openTime = $settings['form_open_time'];
     $closeTime = $settings['form_close_time'];
     
-    return $currentTime >= $openTime && $currentTime <= $closeTime;
+    return $currentTime >= $openTime && $currentTime < $closeTime;
 }
 
 // Get current settings
@@ -37,12 +52,6 @@ function getSettings($pdo) {
     $stmt = $pdo->query("SELECT * FROM settings LIMIT 1");
     return $stmt->fetch();
 }
-
-// Validate user input
-function sanitizeInput($data) {
-    return htmlspecialchars(trim($data), ENT_QUOTES, 'UTF-8');
-}
-
 // Send pass email to student
 function sendPassEmail($email, $firstName, $lastName, $passCode, $mod, $activities) {
     // Check if PHPMailer is available
@@ -76,47 +85,6 @@ function sendPassEmail($email, $firstName, $lastName, $passCode, $mod, $activiti
     try {
         // Server settings
         $mail->isSMTP();
-        $mail->Host       = SMTP_HOST;
-        $mail->SMTPAuth   = true;
-        $mail->Username   = SMTP_USERNAME;
-        $mail->Password   = SMTP_PASSWORD;
-        $mail->SMTPSecure = SMTP_SECURE;
-        $mail->Port       = SMTP_PORT;
-        
-        // Recipients
-        $mail->setFrom(SMTP_FROM_EMAIL, SMTP_FROM_NAME);
-        $mail->addAddress($email, "$firstName $lastName");
-        
-        // Content
-        $mail->isHTML(true);
-        $mail->Subject = 'Your Media Center Study Hall Pass';
-        $mail->Body    = "
-        <html>
-            <body style='font-family: Arial, sans-serif;'>
-                <h2 style='color: #667eea;'>Media Center Study Hall Pass</h2>
-                <p>Hello <strong>$firstName $lastName</strong>,</p>
-                <p>Your pass for today has been approved. Here are your details:</p>
-                <div style='background: #f8f9fa; padding: 15px; border-left: 4px solid #667eea; margin: 20px 0;'>
-                    <p><strong>Pass Code:</strong> <span style='font-size: 1.3em; color: #667eea; font-weight: bold;'>$passCode</span></p>
-                    <p><strong>Mod:</strong> $mod</p>
-                    <p><strong>Activity:</strong> " . implode(', ', $activities) . "</p>
-                </div>
-                <p>Please present this pass code to enter the Media Center.</p>
-                <p style='color: #666; font-size: 0.9em;'><em>Remember: The Media Center is a quiet space for studying and reading.</em></p>
-                <hr style='margin-top: 30px; border: none; border-top: 1px solid #ddd;'>
-                <p style='color: #999; font-size: 0.8em;'>This is an automated message from the Media Center Pass System.</p>
-            </body>
-        </html>
-        ";
-        
-        $mail->send();
-        return true;
-    } catch (Exception $e) {
-        error_log("Email send failed: {$mail->ErrorInfo}");
-        return false;
-    }
-}
-
 // Send daily summary to teachers
 function sendTeacherDailySummary($pdo, $teacherEmail) {
     $today = date('Y-m-d');
@@ -237,12 +205,59 @@ function sendTeacherDailySummary($pdo, $teacherEmail) {
         error_log("Email send failed: {$mail->ErrorInfo}");
         return false;
     }
+}       return true;
+    } catch (Exception $e) {
+        error_log("Email send failed: {$mail->ErrorInfo}");
+        return false;
+    }
+}   ";
+    
+    $headers = "MIME-Version: 1.0" . "\r\n";
+    $headers .= "Content-type: text/html; charset=UTF-8" . "\r\n";
+    
+    return mail($email, $subject, $message, $headers);
+}
+
+// Send daily summary to teachers
+function sendTeacherDailySummary($pdo, $teacherEmail) {
+    $today = date('Y-m-d');
+    
+    $stmt = $pdo->prepare("
+        SELECT first_name, last_name, `mod`, status 
+        FROM passes_current 
+        WHERE teacher_name = ? AND DATE(created_at) = ?
+        ORDER BY `mod` ASC
+    ");
+    $stmt->execute([$teacherEmail, $today]);
+    $passes = $stmt->fetchAll();
+    
+    if (empty($passes)) {
+        return true;
+    }
+    
+    $subject = "Daily Media Center Pass Summary - $today";
+    $message = "<html><body>";
+    $message .= "<h2>Media Center Pass Summary for $today</h2>";
+    $message .= "<table border='1' cellpadding='10'>";
+    $message .= "<tr><th>Student Name</th><th>Mod</th><th>Status</th></tr>";
+    
+    foreach ($passes as $pass) {
+        $status = ucfirst($pass['status']);
+        $message .= "<tr><td>{$pass['first_name']} {$pass['last_name']}</td><td>{$pass['mod']}</td><td>$status</td></tr>";
+    }
+    
+    $message .= "</table></body></html>";
+    
+    $headers = "MIME-Version: 1.0" . "\r\n";
+    $headers .= "Content-type: text/html; charset=UTF-8" . "\r\n";
+    
+    return mail($teacherEmail, $subject, $message, $headers);
 }
 
 // Verify librarian session
 function requireAdmin() {
     if (!isset($_SESSION['librarian_id'])) {
-        header('Location: admin_login.php');
+        header('Location: login.php');
         exit;
     }
 }

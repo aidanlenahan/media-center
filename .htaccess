@@ -4,17 +4,22 @@ Options -Indexes
 # Custom error page
 ErrorDocument 403 /media-center/403.php
 
-# Protect sensitive files
+# Protect sensitive files in root and subdirectories (except public)
 <FilesMatch "\.(sql|md|txt)$">
-    Require all denied
+    <If "%{REQUEST_URI} !~ m#^/media-center/public/#">
+        Require all denied
+    </If>
 </FilesMatch>
 
-# Block access to all PHP files by default
+# Block PHP files in root, but allow all PHP files in public directory
 <FilesMatch "\.php$">
-    Require all denied
-</FilesMatch>
-
-# Allow only specific public PHP files
-<FilesMatch "^(form|login|dashboard|logout|setup|update_database|403)\.php$">
-    Require all granted
+    <If "%{REQUEST_URI} =~ m#^/media-center/public/#">
+        Require all granted
+    </If>
+    <ElseIf "%{REQUEST_URI} =~ m#^/media-center/(form|login|dashboard|logout|setup|update_database|403)\.php$#">
+        Require all granted
+    </ElseIf>
+    <Else>
+        Require all denied
+    </Else>
 </FilesMatch>
