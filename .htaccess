@@ -2,7 +2,7 @@
 Options -Indexes
 
 # Custom error page
-ErrorDocument 403 "403 Forbidden - Access Denied"
+ErrorDocument 403 /media-center/403.php
 
 # Protect sensitive files
 <FilesMatch "\.(sql|md|txt)$">
@@ -15,6 +15,6 @@ ErrorDocument 403 "403 Forbidden - Access Denied"
 </FilesMatch>
 
 # Allow only specific public PHP files
-<FilesMatch "^(form|login|dashboard|logout|setup|update_database)\.php$">
+<FilesMatch "^(form|login|dashboard|logout|setup|update_database|403)\.php$">
     Require all granted
 </FilesMatch>

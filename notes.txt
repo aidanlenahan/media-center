@@ -1,0 +1,77 @@
+INSTALLATION QUICK START
+========================
+
+1. DATABASE SETUP
+   - Run the SQL initialization script in database/init.sql
+   - Default admin login: admin / admin123
+
+2. CONFIGURATION
+   - Edit includes/config.php with your database credentials
+   - Update ADMIN_EMAIL if needed
+
+3. EMAIL SETUP
+   - Configure your server's mail function (php.ini)
+   - Test with the form submission
+
+4. ACCESS POINTS
+   - Student Form: http://localhost/media-center/form.php
+   - Admin Login: http://localhost/media-center/login.php
+   - Admin Dashboard: http://localhost/media-center/dashboard.php
+
+5. FIRST STEPS
+   - Log in as admin
+   - Review settings (form times, approval mode)
+   - Test with a student submission
+   - Approve/reject passes in dashboard
+
+6. SECURITY
+   ============
+   
+   IMPORTANT SECURITY MEASURES:
+   
+   a) Change Admin Password Immediately
+      - Log in to dashboard with default credentials (admin/admin123)
+      - Change password immediately after first login
+   
+   b) Protected Directories
+      - includes/ - Contains config.php with database credentials (BLOCKED via .htaccess)
+      - database/ - Contains SQL files and schema (BLOCKED via .htaccess)
+      - Both directories return 403 errors if accessed directly
+   
+   c) File Access Control
+      - Only specific PHP files are publicly accessible:
+        * form.php (student pass request form)
+        * login.php (admin login)
+        * dashboard.php (admin panel)
+        * logout.php (session end)
+        * setup.php (initial setup)
+        * update_database.php (database migrations)
+        * 403.php (error page)
+      - All other PHP files (scripts, cron jobs) are blocked from web access
+      - .sql, .md, .txt files are blocked from direct access
+   
+   d) Production Deployment
+      - Set up HTTPS/SSL certificate (required for production)
+      - Update config.php to disable error display:
+        error_reporting(0);
+        ini_set('display_errors', 0);
+      - Set strong database password (change from default empty password)
+      - Restrict database user permissions (only grant needed permissions)
+   
+   e) Regular Maintenance
+      - Backup database regularly (export via phpMyAdmin)
+      - Review admin logs periodically
+      - Keep PHP and MySQL updated
+      - Monitor failed login attempts
+   
+   f) .htaccess Files in Place
+      - Root .htaccess: Controls access to files and directories
+      - includes/.htaccess: Blocks all access to config files
+      - database/.htaccess: Blocks all access to SQL files
+      - Custom 403 error page displays for unauthorized access
+
+7. SCHEDULED TASKS (Optional)
+   - Set up cron jobs for:
+     * archive_daily_passes.php (daily at midnight)
+     * send_daily_summary.php (daily at specified time)
+
