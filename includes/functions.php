@@ -242,7 +242,7 @@ function sendTeacherDailySummary($pdo, $teacherEmail) {
 // Verify librarian session
 function requireAdmin() {
     if (!isset($_SESSION['librarian_id'])) {
-        header('Location: admin_login.php');
+        header('Location: login.php');
         exit;
     }
 }
