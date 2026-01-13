@@ -1,0 +1,26 @@
+# Disable directory browsing
+Options -Indexes
+
+# Protect sensitive files
+<FilesMatch "\.(sql|md|txt)$">
+    Order allow,deny
+    Deny from all
+</FilesMatch>
+
+# Allow only specific PHP files to be accessed
+<FilesMatch "^(form|login|dashboard|logout|setup|update_database)\.php$">
+    Order allow,deny
+    Allow from all
+</FilesMatch>
+
+# Block access to other PHP files in root
+<FilesMatch "\.(php)$">
+    Order allow,deny
+    Deny from all
+</FilesMatch>
+
+# But re-allow the specific ones we listed above
+<FilesMatch "^(form|login|dashboard|logout|setup|update_database)\.php$">
+    Order allow,deny
+    Allow from all
+</FilesMatch>
