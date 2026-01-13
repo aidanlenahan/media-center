@@ -7,18 +7,33 @@ function generatePassCode() {
 
 // Check if form is currently open
 function isFormOpen($pdo) {
-    $stmt = $pdo->query("SELECT form_auto_open, form_open_time, form_close_time FROM settings LIMIT 1");
+    $stmt = $pdo->query("SELECT form_auto_open, form_open_time, form_close_time, form_status_override, form_status_manual, disable_weekends FROM settings LIMIT 1");
     $settings = $stmt->fetch();
     
+    // Check for manual override first
+    if ($settings['form_status_override']) {
+        return $settings['form_status_manual'] === 'open';
+    }
+    
+    // Check if weekends are disabled
+    if ($settings['disable_weekends']) {
+        $dayOfWeek = date('N'); // 1 (Monday) through 7 (Sunday)
+        if ($dayOfWeek == 6 || $dayOfWeek == 7) { // Saturday or Sunday
+            return false;
+        }
+    }
+    
+    // Check if auto-open is disabled
     if (!$settings['form_auto_open']) {
         return false;
     }
     
+    // Check time-based opening
     $currentTime = date('H:i:s');
     $openTime = $settings['form_open_time'];
     $closeTime = $settings['form_close_time'];
     
-    return $currentTime >= $openTime && $currentTime <= $closeTime;
+    return $currentTime >= $openTime && $currentTime < $closeTime;
 }
 
 // Get current settings
@@ -98,7 +113,7 @@ function sendTeacherDailySummary($pdo, $teacherEmail) {
 // Verify librarian session
 function requireAdmin() {
     if (!isset($_SESSION['librarian_id'])) {
-        header('Location: admin_login.php');
+        header('Location: login.php');
         exit;
     }
 }

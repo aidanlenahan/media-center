@@ -1,6 +1,12 @@
 <?php
-require_once '../includes/config.php';
-require_once '../includes/functions.php';
+require_once 'includes/config.php';
+require_once 'includes/functions.php';
+
+// Redirect to dashboard if already logged in
+if (isset($_SESSION['librarian_id'])) {
+    header('Location: dashboard.php');
+    exit;
+}
 
 $error = '';
 
@@ -69,7 +75,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </form>
             
             <p style="text-align: center; margin-top: 20px; color: #666;">
-                <a href="../public/index.php" style="color: #667eea; text-decoration: none;">Back to Pass Request Form</a>
+                <a href="form.php" style="color: #667eea; text-decoration: none;">Back to Pass Request Form</a>
             </p>
         </div>
     </div>

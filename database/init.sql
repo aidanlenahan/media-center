@@ -7,9 +7,13 @@ USE media_center;
 CREATE TABLE IF NOT EXISTS settings (
     id INT PRIMARY KEY AUTO_INCREMENT,
     form_auto_open BOOLEAN DEFAULT 0,
+    disable_weekends BOOLEAN DEFAULT 0,
     form_open_time TIME,
     form_close_time TIME,
     auto_approval BOOLEAN DEFAULT 0,
+    form_status_override BOOLEAN DEFAULT 0,
+    form_status_manual ENUM('open', 'closed') DEFAULT 'open',
+    recent_entries_limit INT DEFAULT 10,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );

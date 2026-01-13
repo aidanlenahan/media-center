@@ -237,8 +237,8 @@ header('Content-Type: text/html; charset=utf-8');
                 3. Configure your form settings in the dashboard
             </div>";
             
-            echo "<a href='public/index.php' class='btn'>Go to Home Page</a>";
-            echo "<a href='public/admin_login.php' class='btn' style='background: #2196F3; margin-left: 10px;'>Go to Admin Login</a>";
+            echo "<a href='form.php' class='btn'>Go to Home Page</a>";
+            echo "<a href='login.php' class='btn' style='background: #2196F3; margin-left: 10px;'>Go to Admin Login</a>";
             
         } catch (PDOException $e) {
             echo "<div class='error'><strong>Database Error:</strong> " . htmlspecialchars($e->getMessage()) . "</div>";

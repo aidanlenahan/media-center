@@ -375,7 +375,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
                     
                     <div class="link-list">
                         <a href="check_database.php">🔍 Verify Database Setup</a>
-                        <a href="admin_login.php">🔐 Go to Admin Login</a>
+                        <a href="login.php">🔐 Go to Admin Login</a>
                         <a href="index.php">📋 Go to Student Form</a>
                     </div>
                 </div>

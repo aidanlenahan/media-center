@@ -1,6 +1,6 @@
 <?php
-require_once '../includes/config.php';
-require_once '../includes/functions.php';
+require_once 'includes/config.php';
+require_once 'includes/functions.php';
 
 $formOpen = isFormOpen($pdo);
 $settings = getSettings($pdo);
@@ -21,7 +21,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $formOpen) {
             $teacherName = sanitizeInput($_POST['teacher_name'] ?? '');
             $mod = (int)($_POST['mod'] ?? 0);
             $activities = $_POST['activities'] ?? [];
+            $otherText = sanitizeInput($_POST['other_text'] ?? '');
             $agreement = isset($_POST['agreement']) ? 1 : 0;
+            
+            // If 'Other' is selected, add the text to activities
+            if (in_array('Other', $activities) && $otherText) {
+                $activities[] = 'Other: ' . $otherText;
+            }
             
             // Validate required fields
             if (!$firstName || !$lastName || !$email || !$teacherName || !$mod || !$agreement) {
@@ -143,12 +149,6 @@ if (empty($_SESSION['csrf_token'])) {
                         <option value="">-- Select Mod --</option>
                         <option value="1">Mod 1</option>
                         <option value="2">Mod 2</option>
-                        <option value="3">Mod 3</option>
-                        <option value="4">Mod 4</option>
-                        <option value="5">Mod 5</option>
-                        <option value="6">Mod 6</option>
-                        <option value="7">Mod 7</option>
-                        <option value="8">Mod 8</option>
                     </select>
                 </div>
                 
@@ -158,24 +158,35 @@ if (empty($_SESSION['csrf_token'])) {
                     <span class="bilingual-label">¿Qué actividad harás hoy? (Selecciona al menos una)</span>
                     <div class="checkbox-group">
                         <div class="checkbox-item">
-                            <input type="checkbox" name="activities" value="Studying" id="studying">
+                            <input type="checkbox" name="activities[]" value="Studying" id="studying">
                             <label for="studying">Studying / Estudiando</label>
                         </div>
                         <div class="checkbox-item">
-                            <input type="checkbox" name="activities" value="Working on a project" id="project">
+                            <input type="checkbox" name="activities[]" value="Working on a project" id="project">
                             <label for="project">Working on a project / Trabajando en un proyecto</label>
                         </div>
                         <div class="checkbox-item">
-                            <input type="checkbox" name="activities" value="Reading" id="reading">
+                            <input type="checkbox" name="activities[]" value="Reading" id="reading">
                             <label for="reading">Reading / Leyendo</label>
                         </div>
                         <div class="checkbox-item">
-                            <input type="checkbox" name="activities" value="Meeting with tutor/teacher" id="meeting">
+                            <input type="checkbox" name="activities[]" value="Meeting with tutor/teacher" id="meeting">
                             <label for="meeting">Meeting tutor/teacher / Trabajando con un profesor</label>
                         </div>
                         <div class="checkbox-item">
-                            <input type="checkbox" name="activities" value="Other" id="other">
+                            <input type="checkbox" name="activities[]" value="Other" id="other" onchange="toggleOtherText(this)">
                             <label for="other">Other / Otro</label>
+                        </div>
+                        <div id="other-text-container" style="display: none; margin-top: 10px; margin-left: 25px;">
+                            <input type="text" 
+                                   name="other_text" 
+                                   id="other_text" 
+                                   placeholder="Please specify (max 100 characters)" 
+                                   maxlength="100"
+                                   style="width: 100%;">
+                            <div style="font-size: 0.85em; color: #666; margin-top: 5px;">
+                                <span id="char-count">0</span>/100 characters
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -200,5 +211,30 @@ if (empty($_SESSION['csrf_token'])) {
             </form>
         <?php endif; ?>
     </div>
+    <script>
+        function toggleOtherText(checkbox) {
+            const container = document.getElementById('other-text-container');
+            const textInput = document.getElementById('other_text');
+            if (checkbox.checked) {
+                container.style.display = 'block';
+                textInput.required = true;
+            } else {
+                container.style.display = 'none';
+                textInput.required = false;
+                textInput.value = '';
+                updateCharCount();
+            }
+        }
+        
+        function updateCharCount() {
+            const textInput = document.getElementById('other_text');
+            const charCount = document.getElementById('char-count');
+            if (textInput && charCount) {
+                charCount.textContent = textInput.value.length;
+            }
+        }
+        
+        document.getElementById('other_text')?.addEventListener('input', updateCharCount);
+    </script>
 </body>
 </html>

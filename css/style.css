@@ -7,7 +7,7 @@
 
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: #690000;
     min-height: 100vh;
     padding: 20px;
 }
@@ -24,7 +24,7 @@ body {
 .header {
     text-align: center;
     margin-bottom: 30px;
-    border-bottom: 3px solid #667eea;
+    border-bottom: 3px solid #690000;
     padding-bottom: 20px;
 }
 
@@ -84,8 +84,8 @@ input[type="password"]:focus,
 select:focus,
 textarea:focus {
     outline: none;
-    border-color: #667eea;
-    box-shadow: 0 0 5px rgba(102, 126, 234, 0.3);
+    border-color: #690000;
+    box-shadow: 0 0 5px rgba(105, 0, 0, 0.3);
 }
 
 /* Checkbox and Radio Styles */
@@ -128,13 +128,13 @@ input[type="radio"] {
 }
 
 .btn-primary {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: #690000;
     color: white;
 }
 
 .btn-primary:hover {
     transform: translateY(-2px);
-    box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+    box-shadow: 0 5px 15px rgba(105, 0, 0, 0.4);
 }
 
 .btn-secondary {
@@ -240,7 +240,7 @@ tr:hover {
 
 .card {
     background: #f8f9fa;
-    border-left: 4px solid #667eea;
+    border-left: 4px solid #690000;
     padding: 20px;
     border-radius: 4px;
 }
@@ -259,7 +259,7 @@ tr:hover {
 .card-value {
     font-size: 1.8em;
     font-weight: bold;
-    color: #667eea;
+    color: #690000;
     margin: 10px 0;
 }
 
