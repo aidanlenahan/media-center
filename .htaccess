@@ -16,7 +16,7 @@ ErrorDocument 403 /media-center/403.php
     <If "%{REQUEST_URI} =~ m#^/media-center/public/#">
         Require all granted
     </If>
-    <ElseIf "%{REQUEST_URI} =~ m#^/media-center/(form|login|dashboard|logout|setup|update_database|403)\.php$#">
+    <ElseIf "%{REQUEST_URI} =~ m#^/media-center/(form|login|dashboard|logout|setup|update_database|403|dev_panel|check_database)\.php$#">
         Require all granted
     </ElseIf>
     <Else>

@@ -2,10 +2,10 @@
 /**
  * Database Setup & Initialization Script
  * Run this in browser to automatically create all tables and data
- * URL: http://localhost/media-center/public/setup.php
+ * URL: http://localhost/media-center/setup.php
  */
 
-require_once '../includes/config.php';
+require_once 'includes/config.php';
 
 $setupComplete = false;
 $errors = [];
@@ -42,6 +42,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
                 username VARCHAR(100) UNIQUE NOT NULL,
                 password_hash VARCHAR(255) NOT NULL,
                 email VARCHAR(100) NOT NULL,
+                role ENUM('librarian', 'root') DEFAULT 'librarian',
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                 updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
             )
@@ -92,6 +93,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
         ");
         $messages[] = "✓ Passes Archive table created/verified";
         
+        // Create dev_settings table
+        $pdo->exec("
+            CREATE TABLE IF NOT EXISTS dev_settings (
+                id INT PRIMARY KEY AUTO_INCREMENT,
+                debug_mode BOOLEAN DEFAULT 0,
+                show_sql_queries BOOLEAN DEFAULT 0,
+                log_all_actions BOOLEAN DEFAULT 0,
+                bypass_time_restrictions BOOLEAN DEFAULT 0,
+                test_mode BOOLEAN DEFAULT 0,
+                allow_duplicate_passes BOOLEAN DEFAULT 0,
+                email_override_address VARCHAR(100) DEFAULT NULL,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+            )
+        ");
+        $messages[] = "✓ Dev Settings table created/verified";
+        
         // Check if settings already has data
         $settingsCheck = $pdo->query("SELECT COUNT(*) FROM settings")->fetchColumn();
         if ($settingsCheck == 0) {
@@ -104,26 +122,55 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
             $messages[] = "ℹ Settings data already exists (skipped insertion)";
         }
         
+        // Check if dev_settings already has data
+        $devSettingsCheck = $pdo->query("SELECT COUNT(*) FROM dev_settings")->fetchColumn();
+        if ($devSettingsCheck == 0) {
+            $pdo->exec("
+                INSERT INTO dev_settings (debug_mode, test_mode) 
+                VALUES (0, 0)
+            ");
+            $messages[] = "✓ Default dev settings inserted";
+        } else {
+            $messages[] = "ℹ Dev settings data already exists (skipped insertion)";
+        }
+        
         // Check if admin user already exists
         $adminCheck = $pdo->query("SELECT COUNT(*) FROM librarians WHERE username = 'admin'")->fetchColumn();
         if ($adminCheck == 0) {
             // Generate proper bcrypt hash for "admin123"
             $adminHash = password_hash('admin123', PASSWORD_BCRYPT);
             $stmt = $pdo->prepare("
-                INSERT INTO librarians (username, email, password_hash) 
-                VALUES (?, ?, ?)
+                INSERT INTO librarians (username, email, password_hash, role) 
+                VALUES (?, ?, ?, ?)
             ");
-            $stmt->execute(['admin', 'librarian@school.local', $adminHash]);
+            $stmt->execute(['admin', 'librarian@school.local', $adminHash, 'librarian']);
             $messages[] = "✓ Default admin account created (username: admin, password: admin123)";
         } else {
             $messages[] = "ℹ Admin account already exists (skipped creation)";
+        }
+        
+        // Check if root user already exists
+        $rootCheck = $pdo->query("SELECT COUNT(*) FROM librarians WHERE username = 'root'")->fetchColumn();
+        if ($rootCheck == 0) {
+            // Generate proper bcrypt hash for "root123"
+            $rootHash = password_hash('root123', PASSWORD_BCRYPT);
+            $stmt = $pdo->prepare("
+                INSERT INTO librarians (username, email, password_hash, role) 
+                VALUES (?, ?, ?, ?)
+            ");
+            $stmt->execute(['root', 'developer@school.local', $rootHash, 'root']);
+            $messages[] = "✓ Root user account created (username: root, password: root123) - CHANGE THIS PASSWORD!";
+        } else {
+            $messages[] = "ℹ Root user already exists (skipped creation)";
         }
         
         $pdo->commit();
         $setupComplete = true;
         
     } catch (Exception $e) {
-        $pdo->rollBack();
+        if ($pdo->inTransaction()) {
+            $pdo->rollBack();
+        }
         $errors[] = "Error: " . $e->getMessage();
     }
 }

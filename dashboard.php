@@ -4,6 +4,11 @@ require_once 'includes/functions.php';
 
 requireAdmin();
 
+// Get user role
+$stmt = $pdo->prepare("SELECT role FROM librarians WHERE id = ?");
+$stmt->execute([$_SESSION['librarian_id']]);
+$userRole = $stmt->fetchColumn();
+
 $librarian = $_SESSION['librarian_username'];
 $action = $_GET['action'] ?? 'overview';
 $message = '';
@@ -187,6 +192,9 @@ while ($row = $countStmt->fetch()) {
             <a href="?action=passes" style="padding: 10px 18px; text-decoration: none; color: #333; border-radius: 6px; transition: all 0.2s; <?php echo $action === 'passes' ? 'background: #690000; color: white; font-weight: 500;' : 'background: transparent;'; ?>" onmouseover="if(this.style.background !== 'rgb(105, 0, 0)') this.style.background='#e9ecef'" onmouseout="if(this.style.background !== 'rgb(105, 0, 0)') this.style.background='transparent'">Manage Passes</a>
             <a href="?action=history" style="padding: 10px 18px; text-decoration: none; color: #333; border-radius: 6px; transition: all 0.2s; <?php echo $action === 'history' ? 'background: #690000; color: white; font-weight: 500;' : 'background: transparent;'; ?>" onmouseover="if(this.style.background !== 'rgb(105, 0, 0)') this.style.background='#e9ecef'" onmouseout="if(this.style.background !== 'rgb(105, 0, 0)') this.style.background='transparent'">History</a>
             <a href="?action=settings" style="padding: 10px 18px; text-decoration: none; color: #333; border-radius: 6px; transition: all 0.2s; <?php echo $action === 'settings' ? 'background: #690000; color: white; font-weight: 500;' : 'background: transparent;'; ?>" onmouseover="if(this.style.background !== 'rgb(105, 0, 0)') this.style.background='#e9ecef'" onmouseout="if(this.style.background !== 'rgb(105, 0, 0)') this.style.background='transparent'">Settings</a>
+            <?php if ($userRole === 'root'): ?>
+            <a href="dev_panel.php" style="padding: 10px 18px; text-decoration: none; color: white; background: #e74c3c; border-radius: 6px; transition: all 0.2s; font-weight: 500;" onmouseover="this.style.background='#c0392b'" onmouseout="this.style.background='#e74c3c'">⚙️ Developer</a>
+            <?php endif; ?>
             <div style="flex: 1;"></div>
             <a href="form.php" style="padding: 10px 18px; text-decoration: none; background: #690000; color: white; border-radius: 6px; transition: all 0.2s;" target="_blank" onmouseover="this.style.background='#5e0000ff'" onmouseout="this.style.background='#690000'">View Form</a>
             <a href="logout.php" style="padding: 10px 18px; text-decoration: none; background: #6c757d; color: white; border-radius: 6px; transition: all 0.2s;" onmouseover="this.style.background='#5a6268'" onmouseout="this.style.background='#6c757d'">Logout</a>

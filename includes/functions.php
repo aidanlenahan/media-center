@@ -18,6 +18,13 @@ function generatePassCode() {
 
 // Check if form is currently open
 function isFormOpen($pdo) {
+    // Check developer settings for bypass
+    $devStmt = $pdo->query("SELECT bypass_time_restrictions FROM dev_settings LIMIT 1");
+    $devSettings = $devStmt->fetch();
+    if ($devSettings && $devSettings['bypass_time_restrictions']) {
+        return true;
+    }
+    
     $stmt = $pdo->query("SELECT form_auto_open, form_open_time, form_close_time FROM settings LIMIT 1");
     $settings = $stmt->fetch();
     
@@ -45,6 +52,25 @@ function sanitizeInput($data) {
 
 // Send pass email to student
 function sendPassEmail($email, $firstName, $lastName, $passCode, $mod, $activities) {
+    global $pdo;
+    
+    // Check developer settings
+    $devStmt = $pdo->query("SELECT test_mode, email_override_address FROM dev_settings LIMIT 1");
+    $devSettings = $devStmt->fetch();
+    
+    // If test mode is enabled, don't send email
+    if ($devSettings && $devSettings['test_mode']) {
+        error_log("TEST MODE: Would have sent email to $email with pass code $passCode");
+        return true;
+    }
+    
+    // If email override is set, send to override address instead
+    $originalEmail = $email;
+    if ($devSettings && !empty($devSettings['email_override_address'])) {
+        $email = $devSettings['email_override_address'];
+        error_log("EMAIL OVERRIDE: Redirecting email from $originalEmail to $email");
+    }
+    
     // Check if PHPMailer is available
     if (!class_exists('PHPMailer\PHPMailer\PHPMailer')) {
         // Fallback to native mail()
@@ -87,9 +113,12 @@ function sendPassEmail($email, $firstName, $lastName, $passCode, $mod, $activiti
         $mail->setFrom(SMTP_FROM_EMAIL, SMTP_FROM_NAME);
         $mail->addAddress($email, "$firstName $lastName");
         
+        // Add test mode prefix if needed
+        $subjectPrefix = ($devSettings && $devSettings['test_mode']) ? '[TEST] ' : '';
+        
         // Content
         $mail->isHTML(true);
-        $mail->Subject = 'Your Media Center Study Hall Pass';
+        $mail->Subject = $subjectPrefix . 'Your Media Center Study Hall Pass';
         $mail->Body    = "
         <html>
             <body style='font-family: Arial, sans-serif;'>
@@ -242,7 +271,7 @@ function sendTeacherDailySummary($pdo, $teacherEmail) {
 // Verify librarian session
 function requireAdmin() {
     if (!isset($_SESSION['librarian_id'])) {
-        header('Location: admin_login.php');
+        header('Location: login.php');
         exit;
     }
 }
