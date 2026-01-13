@@ -1,2 +1,4 @@
 # Deny all access to this directory
-Deny from all
+Options -Indexes
+Require all denied
+ErrorDocument 403 "403 Forbidden - Access Denied"

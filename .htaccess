@@ -1,26 +1,20 @@
 # Disable directory browsing
 Options -Indexes
 
+# Custom error page
+ErrorDocument 403 "403 Forbidden - Access Denied"
+
 # Protect sensitive files
 <FilesMatch "\.(sql|md|txt)$">
-    Order allow,deny
-    Deny from all
+    Require all denied
 </FilesMatch>
 
-# Allow only specific PHP files to be accessed
+# Block access to all PHP files by default
+<FilesMatch "\.php$">
+    Require all denied
+</FilesMatch>
+
+# Allow only specific public PHP files
 <FilesMatch "^(form|login|dashboard|logout|setup|update_database)\.php$">
-    Order allow,deny
-    Allow from all
-</FilesMatch>
-
-# Block access to other PHP files in root
-<FilesMatch "\.(php)$">
-    Order allow,deny
-    Deny from all
-</FilesMatch>
-
-# But re-allow the specific ones we listed above
-<FilesMatch "^(form|login|dashboard|logout|setup|update_database)\.php$">
-    Order allow,deny
-    Allow from all
+    Require all granted
 </FilesMatch>
