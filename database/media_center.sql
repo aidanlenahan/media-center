@@ -1,11 +1,11 @@
 -- phpMyAdmin SQL Dump
--- version 5.2.3
+-- version 5.2.1
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1:3306
--- Generation Time: Jan 14, 2026 at 04:20 AM
--- Server version: 8.4.7
--- PHP Version: 8.3.28
+-- Generation Time: Jan 14, 2026 at 01:34 PM
+-- Server version: 9.1.0
+-- PHP Version: 8.3.14
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -140,7 +140,7 @@ INSERT INTO `passes_current` (`id`, `first_name`, `last_name`, `email`, `teacher
 (1, 'Aidan', 'Lenahan', 'aidanlenahan@outlook.com', 'Milonas', 1, '[\"Studying\"]', 1, 'rejected', '3393461008B2', NULL, '2026-01-13 04:03:13', '2026-01-13 05:20:02'),
 (2, 'Aidan', 'Lenahan', 'aidanlenahan@outlook.com', 'Milonas', 1, '[\"Studying\"]', 1, 'approved', 'A6FA35F66833', '2026-01-13 05:20:53', '2026-01-13 05:20:29', '2026-01-13 05:20:53'),
 (3, 'Aidan', 'Lenahan', 'aml.lenahan@gmail.com', 'Milonas', 2, '[\"Working on a project\",\"Reading\",\"Meeting with tutor\\/teacher\"]', 1, 'approved', '607918B05FD9', '2026-01-14 03:47:13', '2026-01-14 03:46:52', '2026-01-14 03:47:13'),
-(4, 'll', 'll', 'jared896869686869684655457@students.rbrhs.org', 'M', 1, '[\"Meeting with tutor\\/teacher\"]', 1, 'pending', '325BF04AEC3A', NULL, '2026-01-14 04:02:34', '2026-01-14 04:02:34');
+(4, 'll', 'll', 'jared896869686869684655457@students.rbrhs.org', 'M', 1, '[\"Meeting with tutor\\/teacher\"]', 1, 'rejected', '325BF04AEC3A', NULL, '2026-01-14 04:02:34', '2026-01-14 13:33:54');
 
 -- --------------------------------------------------------
 
@@ -169,7 +169,7 @@ CREATE TABLE IF NOT EXISTS `settings` (
 --
 
 INSERT INTO `settings` (`id`, `form_auto_open`, `form_open_time`, `form_close_time`, `auto_approval`, `created_at`, `updated_at`, `form_status_override`, `form_status_manual`, `recent_entries_limit`, `disable_weekends`) VALUES
-(1, 1, '07:30:00', '14:30:00', 0, '2026-01-13 03:25:01', '2026-01-14 03:46:27', 1, 'open', 10, 1),
+(1, 1, '07:30:00', '14:30:00', 0, '2026-01-13 03:25:01', '2026-01-14 13:34:02', 0, 'open', 10, 1),
 (2, 1, '07:30:00', '14:30:00', 0, '2026-01-13 16:05:26', '2026-01-13 16:05:26', 0, 'open', 10, 0);
 COMMIT;
 

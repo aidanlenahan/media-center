@@ -51,7 +51,12 @@ function isFormOpen($pdo) {
     $openTime = $settings['form_open_time'];
     $closeTime = $settings['form_close_time'];
     
-    return $currentTime >= $openTime && $currentTime < $closeTime;
+    // Convert to timestamps for proper comparison
+    $current = strtotime($currentTime);
+    $open = strtotime($openTime);
+    $close = strtotime($closeTime);
+    
+    return $current >= $open && $current <= $close;
 }
 
 // Get current settings
