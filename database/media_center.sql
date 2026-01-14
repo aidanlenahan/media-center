@@ -1,11 +1,11 @@
 -- phpMyAdmin SQL Dump
--- version 5.2.1
+-- version 5.2.1deb3
 -- https://www.phpmyadmin.net/
 --
--- Host: 127.0.0.1:3306
--- Generation Time: Jan 14, 2026 at 01:34 PM
--- Server version: 9.1.0
--- PHP Version: 8.3.14
+-- Host: localhost:3306
+-- Generation Time: Jan 14, 2026 at 03:33 PM
+-- Server version: 8.0.44-0ubuntu0.24.04.2
+-- PHP Version: 8.3.6
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -27,9 +27,8 @@ SET time_zone = "+00:00";
 -- Table structure for table `dev_settings`
 --
 
-DROP TABLE IF EXISTS `dev_settings`;
-CREATE TABLE IF NOT EXISTS `dev_settings` (
-  `id` int NOT NULL AUTO_INCREMENT,
+CREATE TABLE `dev_settings` (
+  `id` int NOT NULL,
   `debug_mode` tinyint(1) DEFAULT '0',
   `show_sql_queries` tinyint(1) DEFAULT '0',
   `log_all_actions` tinyint(1) DEFAULT '0',
@@ -39,9 +38,8 @@ CREATE TABLE IF NOT EXISTS `dev_settings` (
   `email_override_address` varchar(100) DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  `require_school_email` tinyint(1) DEFAULT '0',
-  PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+  `require_school_email` tinyint(1) DEFAULT '0'
+) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 --
 -- Dumping data for table `dev_settings`
@@ -56,18 +54,15 @@ INSERT INTO `dev_settings` (`id`, `debug_mode`, `show_sql_queries`, `log_all_act
 -- Table structure for table `librarians`
 --
 
-DROP TABLE IF EXISTS `librarians`;
-CREATE TABLE IF NOT EXISTS `librarians` (
-  `id` int NOT NULL AUTO_INCREMENT,
+CREATE TABLE `librarians` (
+  `id` int NOT NULL,
   `username` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `password_hash` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `email` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `role` enum('librarian','root') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT 'librarian',
   `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
-  `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `username` (`username`)
-) ENGINE=MyISAM AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+  `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Dumping data for table `librarians`
@@ -84,9 +79,8 @@ INSERT INTO `librarians` (`id`, `username`, `password_hash`, `email`, `role`, `c
 -- Table structure for table `passes_archive`
 --
 
-DROP TABLE IF EXISTS `passes_archive`;
-CREATE TABLE IF NOT EXISTS `passes_archive` (
-  `id` int NOT NULL AUTO_INCREMENT,
+CREATE TABLE `passes_archive` (
+  `id` int NOT NULL,
   `first_name` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `last_name` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `email` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
@@ -99,12 +93,7 @@ CREATE TABLE IF NOT EXISTS `passes_archive` (
   `sent_at` timestamp NULL DEFAULT NULL,
   `pass_date` date NOT NULL,
   `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
-  `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `pass_code` (`pass_code`),
-  KEY `pass_date` (`pass_date`),
-  KEY `first_name` (`first_name`),
-  KEY `last_name` (`last_name`)
+  `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
@@ -113,9 +102,8 @@ CREATE TABLE IF NOT EXISTS `passes_archive` (
 -- Table structure for table `passes_current`
 --
 
-DROP TABLE IF EXISTS `passes_current`;
-CREATE TABLE IF NOT EXISTS `passes_current` (
-  `id` int NOT NULL AUTO_INCREMENT,
+CREATE TABLE `passes_current` (
+  `id` int NOT NULL,
   `first_name` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `last_name` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `email` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
@@ -127,10 +115,8 @@ CREATE TABLE IF NOT EXISTS `passes_current` (
   `pass_code` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `sent_at` timestamp NULL DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
-  `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `pass_code` (`pass_code`)
-) ENGINE=MyISAM AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+  `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Dumping data for table `passes_current`
@@ -148,9 +134,8 @@ INSERT INTO `passes_current` (`id`, `first_name`, `last_name`, `email`, `teacher
 -- Table structure for table `settings`
 --
 
-DROP TABLE IF EXISTS `settings`;
-CREATE TABLE IF NOT EXISTS `settings` (
-  `id` int NOT NULL AUTO_INCREMENT,
+CREATE TABLE `settings` (
+  `id` int NOT NULL,
   `form_auto_open` tinyint(1) DEFAULT '0',
   `form_open_time` time DEFAULT NULL,
   `form_close_time` time DEFAULT NULL,
@@ -160,9 +145,8 @@ CREATE TABLE IF NOT EXISTS `settings` (
   `form_status_override` tinyint(1) DEFAULT '0',
   `form_status_manual` enum('open','closed') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT 'open',
   `recent_entries_limit` int DEFAULT '10',
-  `disable_weekends` tinyint(1) DEFAULT '0',
-  PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+  `disable_weekends` tinyint(1) DEFAULT '0'
+) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Dumping data for table `settings`
@@ -171,6 +155,80 @@ CREATE TABLE IF NOT EXISTS `settings` (
 INSERT INTO `settings` (`id`, `form_auto_open`, `form_open_time`, `form_close_time`, `auto_approval`, `created_at`, `updated_at`, `form_status_override`, `form_status_manual`, `recent_entries_limit`, `disable_weekends`) VALUES
 (1, 1, '07:30:00', '14:30:00', 0, '2026-01-13 03:25:01', '2026-01-14 13:34:02', 0, 'open', 10, 1),
 (2, 1, '07:30:00', '14:30:00', 0, '2026-01-13 16:05:26', '2026-01-13 16:05:26', 0, 'open', 10, 0);
+
+--
+-- Indexes for dumped tables
+--
+
+--
+-- Indexes for table `dev_settings`
+--
+ALTER TABLE `dev_settings`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `librarians`
+--
+ALTER TABLE `librarians`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `username` (`username`);
+
+--
+-- Indexes for table `passes_archive`
+--
+ALTER TABLE `passes_archive`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `pass_code` (`pass_code`),
+  ADD KEY `pass_date` (`pass_date`),
+  ADD KEY `first_name` (`first_name`),
+  ADD KEY `last_name` (`last_name`);
+
+--
+-- Indexes for table `passes_current`
+--
+ALTER TABLE `passes_current`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `pass_code` (`pass_code`);
+
+--
+-- Indexes for table `settings`
+--
+ALTER TABLE `settings`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- AUTO_INCREMENT for dumped tables
+--
+
+--
+-- AUTO_INCREMENT for table `dev_settings`
+--
+ALTER TABLE `dev_settings`
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+
+--
+-- AUTO_INCREMENT for table `librarians`
+--
+ALTER TABLE `librarians`
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+
+--
+-- AUTO_INCREMENT for table `passes_archive`
+--
+ALTER TABLE `passes_archive`
+  MODIFY `id` int NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `passes_current`
+--
+ALTER TABLE `passes_current`
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+
+--
+-- AUTO_INCREMENT for table `settings`
+--
+ALTER TABLE `settings`
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
