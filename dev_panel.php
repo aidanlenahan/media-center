@@ -29,6 +29,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $bypassTimeRestrictions = isset($_POST['bypass_time_restrictions']) ? 1 : 0;
             $testMode = isset($_POST['test_mode']) ? 1 : 0;
             $allowDuplicatePasses = isset($_POST['allow_duplicate_passes']) ? 1 : 0;
+            $requireSchoolEmail = isset($_POST['require_school_email']) ? 1 : 0;
             $emailOverride = $_POST['email_override_address'] ?? null;
             
             $stmt = $pdo->prepare("
@@ -39,10 +40,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 bypass_time_restrictions = ?,
                 test_mode = ?,
                 allow_duplicate_passes = ?,
+                require_school_email = ?,
                 email_override_address = ?
                 WHERE id = 1
             ");
-            $stmt->execute([$debugMode, $showSqlQueries, $logAllActions, $bypassTimeRestrictions, $testMode, $allowDuplicatePasses, $emailOverride]);
+            $stmt->execute([$debugMode, $showSqlQueries, $logAllActions, $bypassTimeRestrictions, $testMode, $allowDuplicatePasses, $requireSchoolEmail, $emailOverride]);
             
             $message = 'Developer settings updated successfully.';
             $messageType = 'success';
@@ -255,6 +257,13 @@ $systemInfo = [
                     <label style="display: flex; align-items: center; margin-bottom: 10px;">
                         <input type="checkbox" name="allow_duplicate_passes" <?php echo $devSettings['allow_duplicate_passes'] ? 'checked' : ''; ?> style="width: auto; margin-right: 10px;">
                         <span><strong>Allow Duplicate Passes</strong> - Allow same student to submit multiple passes per mod</span>
+                    </label>
+                </div>
+                
+                <div class="form-group">
+                    <label style="display: flex; align-items: center; margin-bottom: 10px;">
+                        <input type="checkbox" name="require_school_email" <?php echo $devSettings['require_school_email'] ? 'checked' : ''; ?> style="width: auto; margin-right: 10px;">
+                        <span><strong>Require School Email</strong> - Only accept @students.rbrhs.org email addresses</span>
                     </label>
                 </div>
                 

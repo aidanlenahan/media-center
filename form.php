@@ -34,9 +34,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $formOpen) {
                 $error = 'Please fill out all required fields.';
             } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
                 $error = 'Please enter a valid email address.';
-            } elseif (count($activities) === 0) {
-                $error = 'Please select at least one activity.';
             } else {
+                // Check if school email is required
+                $devStmt = $pdo->query("SELECT require_school_email FROM dev_settings LIMIT 1");
+                $devSettings = $devStmt->fetch();
+                if ($devSettings && $devSettings['require_school_email']) {
+                    if (!preg_match('/@students\.rbrhs\.org$/i', $email)) {
+                        $error = 'Please use your school email address (@students.rbrhs.org).';
+                    }
+                }
+            }
+            
+            if (!$error && count($activities) === 0) {
+                $error = 'Please select at least one activity.';
+            }
+            
+            if (!$error) {
                 // Generate pass code
                 $passCode = generatePassCode();
                 $activitiesJson = json_encode($activities);
@@ -79,10 +92,16 @@ if (empty($_SESSION['csrf_token'])) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Media Center Study Hall Pass</title>
+    <link rel="icon" type="image/svg+xml" href="img/buc.svg">
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
     <div class="container">
+        <!-- Hidden Admin Login Button -->
+        <div id="adminLoginBtn" style="display: none; margin-bottom: 20px; text-align: center;">
+            <a href="login.php" style="display: inline-block; padding: 12px 30px; background: #690000; color: white; text-decoration: none; border-radius: 6px; font-weight: 600; transition: all 0.3s;" onmouseover="this.style.background='#4a0000'" onmouseout="this.style.background='#690000'">🔐 Admin Login</a>
+        </div>
+        
         <div class="header">
             <h1>Media Center Study Hall Pass Request</h1>
             <p>Solicitud de Pase de Estudio en la Biblioteca</p>
@@ -126,12 +145,23 @@ if (empty($_SESSION['csrf_token'])) {
                 
                 <!-- Email Note -->
                 <div class="form-group">
+                    <?php
+                    // Check if school email is required
+                    $devStmt = $pdo->query("SELECT require_school_email FROM dev_settings LIMIT 1");
+                    $devSettings = $devStmt->fetch();
+                    $requireSchoolEmail = $devSettings && $devSettings['require_school_email'];
+                    ?>
                     <p style="color: #666; font-size: 0.95em;">
                         <strong>This form collected the email account you're signed into. Your pass will be emailed to you.</strong><br>
                         <em>Este formulario recopiló la cuenta de correo electrónico en la que inició sesión. Su pase será enviado a esta dirección.</em>
+                        <?php if ($requireSchoolEmail): ?>
+                            <br><br>
+                            <span style="color: #690000; font-weight: bold;">⚠️ You must use your school email address (@students.rbrhs.org)</span><br>
+                            <em style="color: #690000;">Debe usar su correo electrónico escolar (@students.rbrhs.org)</em>
+                        <?php endif; ?>
                     </p>
                     <label>Email Address / Email <span class="required">*</span></label>
-                    <input type="email" name="email" required>
+                    <input type="email" name="email" <?php echo $requireSchoolEmail ? 'pattern=".*@students\.rbrhs\.org$" title="Please use your school email address (@students.rbrhs.org)"' : ''; ?> required>
                 </div>
                 
                 <!-- Teacher Name -->
@@ -212,6 +242,19 @@ if (empty($_SESSION['csrf_token'])) {
         <?php endif; ?>
     </div>
     <script>
+        // Admin shortcut: Ctrl+Alt+D to show admin login button
+        document.addEventListener('keydown', function(e) {
+            if (e.ctrlKey && e.altKey && e.key === 'd') {
+                e.preventDefault();
+                const adminBtn = document.getElementById('adminLoginBtn');
+                if (adminBtn.style.display === 'none') {
+                    adminBtn.style.display = 'block';
+                } else {
+                    adminBtn.style.display = 'none';
+                }
+            }
+        });
+        
         function toggleOtherText(checkbox) {
             const container = document.getElementById('other-text-container');
             const textInput = document.getElementById('other_text');
