@@ -314,8 +314,9 @@ $systemInfo = [
         <div class="dev-section">
             <h2>Quick Actions</h2>
             <div style="display: flex; gap: 10px; flex-wrap: wrap;">
-                <a href="check_database.php" class="btn btn-primary" target="_blank">🔍 Check Database Status</a>
-                <a href="test_email.php" class="btn btn-primary" target="_blank">📧 Test Email Configuration</a>
+                <a href="debug/check_database.php" class="btn btn-primary" target="_blank">🔍 Check Database Status</a>
+                <a href="debug/test_email.php" class="btn btn-primary" target="_blank">📧 Test Email Configuration</a>
+                <a href="debug/debug_form_status.php" class="btn btn-primary" target="_blank">🕐 Debug Form Status</a>
                 <a href="setup.php" class="btn btn-primary" target="_blank">⚙️ Re-run Setup</a>
             </div>
         </div>

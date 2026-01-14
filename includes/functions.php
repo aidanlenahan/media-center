@@ -291,7 +291,9 @@ function sendTeacherDailySummary($pdo, $teacherEmail) {
 // Verify librarian session
 function requireAdmin() {
     if (!isset($_SESSION['librarian_id'])) {
-        header('Location: login.php');
+        // Determine the correct path to login.php based on current directory
+        $loginPath = (strpos($_SERVER['SCRIPT_NAME'], '/debug/') !== false) ? '../login.php' : 'login.php';
+        header('Location: ' . $loginPath);
         exit;
     }
 }

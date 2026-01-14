@@ -2,6 +2,18 @@
 require_once '../includes/config.php';
 require_once '../includes/functions.php';
 
+requireAdmin();
+
+// Check if user is root
+$stmt = $pdo->prepare("SELECT role FROM librarians WHERE id = ?");
+$stmt->execute([$_SESSION['librarian_id']]);
+$user = $stmt->fetch();
+
+if ($user['role'] !== 'root') {
+    header('Location: ../dashboard.php');
+    exit;
+}
+
 $testResult = null;
 $errorMsg = null;
 
@@ -108,11 +120,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </div>
         
         <div style="margin-top: 20px; text-align: center;">
-            <a href="check_database.php" class="btn btn-secondary" style="display: inline-block; padding: 10px 20px; text-decoration: none;">
-                ← Back to Database Check
+            <a href="../dev_panel.php" class="btn btn-secondary" style="display: inline-block; padding: 10px 20px; text-decoration: none;">
+                ← Back to Developer Panel
             </a>
-            <a href="index.php" class="btn btn-secondary" style="display: inline-block; padding: 10px 20px; text-decoration: none; margin-left: 10px;">
-                Go to Form →
+            <a href="check_database.php" class="btn btn-secondary" style="display: inline-block; padding: 10px 20px; text-decoration: none; margin-left: 10px;">
+                Database Check
+            </a>
+            <a href="../dashboard.php" class="btn btn-secondary" style="display: inline-block; padding: 10px 20px; text-decoration: none; margin-left: 10px;">
+                Dashboard
             </a>
         </div>
     </div>

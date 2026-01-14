@@ -1,4 +1,7 @@
 <?php
+// Set timezone (adjust to your local timezone)
+date_default_timezone_set('America/New_York'); // EST/EDT
+
 // Database configuration
 define('DB_HOST', 'localhost');
 define('DB_USER', 'admin');

@@ -4,7 +4,20 @@
  * Checks if all tables, columns, and data exist correctly
  */
 
-require_once 'includes/config.php';
+require_once '../includes/config.php';
+require_once '../includes/functions.php';
+
+requireAdmin();
+
+// Check if user is root
+$stmt = $pdo->prepare("SELECT role FROM librarians WHERE id = ?");
+$stmt->execute([$_SESSION['librarian_id']]);
+$user = $stmt->fetch();
+
+if ($user['role'] !== 'root') {
+    header('Location: dashboard.php');
+    exit;
+}
 
 $checks = [];
 
@@ -301,8 +314,9 @@ $totalChecks = count($checks);
         <?php endforeach; ?>
         
         <div class="actions">
-            <a href="setup.php" class="btn">Run Setup Again</a>
-            <a href="dashboard.php" class="btn btn-secondary">Go to Dashboard</a>
+            <a href="../dev_panel.php" class="btn">← Back to Developer Panel</a>
+            <a href="../setup.php" class="btn">Run Setup Again</a>
+            <a href="../dashboard.php" class="btn btn-secondary">Go to Dashboard</a>
             <a href="javascript:location.reload()" class="btn btn-secondary">Refresh Check</a>
         </div>
     </div>
